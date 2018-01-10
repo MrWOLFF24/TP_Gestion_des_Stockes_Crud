@@ -6,7 +6,7 @@
         <input id="search" type="search" placeholder="Nom du produit">
         <div class="disconnect">
             <i class="fa fa-sign-out" aria-hidden="true"></i>
-            <span>Déconnexion</span>
+            <span><a href="">Déconnexion</a></span>
         </div>
     </div>
     <div class="gst_stock">
@@ -18,42 +18,20 @@
         <h2>Ajouter un Produit</h2>
         <i class="fa fa-times fa-3x cross" aria-hidden="true"></i>
 
-        <form action="javascript:void(0);" method="post" id="add_product">
+        <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST" id="add_product">
             <label for="product_name">Nom du produit :</label>
-            <input id="product_name" type="text" placeholder=" Ex: toto" required>
+            <input id="product_name" type="text" placeholder="Ex: basket Nike" required>
             <br>
             <label for="product_price">Prix du Produit :</label>
-            <input id="product_price" type="text" placeholder=" Ex: 23 €" required>
+            <input id="product_price" type="text" placeholder="Ex: 23 €" required>
             <br>
             <label for="product_color">Couleur du Produit :</label>
-            <input id="product_color" type="text" placeholder=" Ex: Rouge">
+            <input id="product_color" type="text" placeholder="Ex: Rouge">
             <br>
             <label for="product_discription">Description du Produit :</label>
             <textarea id="product_discription" placeholder="Super produit" required></textarea>
             <br>
             <input id="send" class="button success" type="submit" value="Ajouter">
-        </form>
-    </div>
-
-    <!-- modal edit product -->
-    <div class="edit_products">
-        <h2>Modifier un Produit</h2>
-        <i class="fa fa-times fa-3x edit-cross" aria-hidden="true"></i>
-
-        <form action="javascript:void(0);" method="post" id="edit_product">
-            <label for="edit_name">Nom du produit :</label>
-            <input id="edit_name" type="text" placeholder=" Ex: oui oui" required>
-            <br>
-            <label for="edit_price">Prix du Produit :</label>
-            <input id="edit_price" type="text" placeholder=" Ex: 13 €" required>
-            <br>
-            <label for="edit_color">Couleur du Produit :</label>
-            <input id="edit_color" type="text" placeholder=" Ex: Vert">
-            <br>
-            <label for="edit_discription">Description du Produit :</label>
-            <textarea id="edit_discription" placeholder="Super jouet" required></textarea>
-            <br>
-            <input id="edit" class="button modify" type="submit" value="Modifier">
         </form>
     </div>
     <!-- Tableau -->
