@@ -24,7 +24,7 @@ function deleteProducts($ids) {
 // insère une nouvelle ligne de facture avec les infos du post
 function createProduct() {
     global $db;
-    $sql = "INSERT INTO produits (nom, prix, couleur, discription) VALUES (:nom, :prix, :couleur, :discription)";
+    $sql = "INSERT INTO produits (nom, prix, couleur, description) VALUES (:nom, :prix, :couleur, :discription)";
 
     $query = $db->prepare($sql);
     $query->bindParam(":nom", $_POST['product_name'], PDO::PARAM_STR);

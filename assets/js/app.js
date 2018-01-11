@@ -64,7 +64,6 @@ const app = (function () {
             xhr.open("POST", "ajax.php");
 
             xhr.onload = function getServerResponse() {
-
                 if (mode === "create") {
                     let id = Number(this.response);
                     addProductInDOMList(id, {
@@ -101,7 +100,6 @@ const app = (function () {
      */
     const deleteProduct = function () {
         const checked = document.querySelectorAll(".delete input:checked");
-        console.log(checked);
 
         if (checked.length) {
             let fd = new FormData();
@@ -160,7 +158,7 @@ const app = (function () {
         xhr.open("POST", "ajax.php");
 
         xhr.onload = function getBillFromServer() {
-            const productToEdit = JSON.parse(this.response);
+            let productToEdit = JSON.parse(this.response);
             display(productToEdit);
         };
 
@@ -212,18 +210,20 @@ const app = (function () {
     const updateProductInDOMList = function (productName, productPrice, productColor, productDiscription) {
         let td;
         const tr = document.querySelector(`[data-id-product="${activeProductId}"]`);
-        console.log(tr);
-        td = tr.querySelector("td:nth-child(2)");
-        td.textContent = productName;
+        if (tr){
 
-        td = tr.querySelector("td:nth-child(3)");
-        td.textContent = productPrice;
+            td = tr.querySelector("td:nth-child(2)");
+            td.textContent = productName;
 
-        td = tr.querySelector("td:nth-child(4)");
-        td.textContent = productColor;
+            td = tr.querySelector("td:nth-child(3)");
+            td.textContent = productPrice;
 
-        td = tr.querySelector("td:nth-child(5)");
-        td.textContent = productDiscription;
+            td = tr.querySelector("td:nth-child(4)");
+            td.textContent = productColor;
+
+            td = tr.querySelector("td:nth-child(5)");
+            td.textContent = productDiscription;
+        }
     };
 
     /**
@@ -232,10 +232,7 @@ const app = (function () {
      */
     const display = function (productToEdit) {
         const titre = document.querySelector(".modal-content h2");
-        if (modal.classList.contains("is-active")) {
-            resetForm();
-            display(billToEdit);
-        } else {
+
             titre.textContent = "Modifier un Produit";
             send.value = "Modifier";
             modal.classList.add("is-active");
@@ -256,7 +253,6 @@ const app = (function () {
                 titre.textContent = "Ajouter un Produit";
                 send.value = "Ajouter";
             }
-        }
     };
 
     const init = function init() {
@@ -269,21 +265,23 @@ const app = (function () {
         updateProductBtns.forEach(function (btn) {
             btn.onclick = editProduct;
         });
-
         addProd.addEventListener("click", function (e) {
             e.preventDefault();
             modal.classList.add("is-active");
         });
 
+        send.addEventListener("click", function (evt) {
+            display();
+            addProduct(evt, formStatus);
+        });
+
         const deleteBtn = document.getElementById("delete_product");
         if (deleteBtn) deleteBtn.onclick = deleteProduct;
-        send.onclick = function chooseFormMode(evt) {
-            addProduct(evt, formStatus);
-        };
 
         const cross = document.querySelector(".cross");
         cross.addEventListener("click", function () {
            modal.classList.remove("is-active");
+           resetForm();
         });
     };
 
