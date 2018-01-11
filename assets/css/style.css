@@ -114,12 +114,13 @@ div.wrapper{
 }
 .gst_stock a:hover {
     opacity: 0.6;
+    cursor: pointer;
 }
 /*------- Modal add products -------*/
 .modal-content {
     position: absolute;
-    background-color: rgba(0,0,0,0.7);
-    color: snow;
+    background-color: #c7ddef;
+    color: #1a1a1a;
     left: 50%;
     top: 50%;
     width: 700px;
@@ -136,6 +137,9 @@ div.wrapper{
     -webkit-animation-timing-function: cubic-bezier(.88,1.85,.79,.69);
     -moz-animation-timing-function: cubic-bezier(.88,1.85,.79,.69);
     -o-animation-timing-function: cubic-bezier(.88,1.85,.79,.69);
+}
+.modal-content.is-active {
+    display: block;
 }
 .modal-content h2 {
     padding: 10px 20px 5px;
@@ -167,55 +171,6 @@ div.wrapper{
     background-color: #2ecc71;
     cursor: pointer;
     margin-right: 40px;
-}
-/*------ Modal edit product ------*/
-.edit_products {
-    display: none;
-    position: absolute;
-    background-color: rgba(0,0,0,0.7);
-    color: snow;
-    left: 50%;
-    top: 50%;
-    width: 700px;
-    height: auto;
-    margin-top: -259px;
-    margin-left: -363px;
-    border-radius: 5px;
-    animation: slideIn 700ms backwards;
-    -webkit-animation: slideIn 700ms backwards;
-    -moz-animation: slideIn 700ms backwards;
-    -o-animation: slideIn 700ms backwards;
-    animation-timing-function: cubic-bezier(.88,1.85,.79,.69);
-    -webkit-animation-timing-function: cubic-bezier(.88,1.85,.79,.69);
-    -moz-animation-timing-function: cubic-bezier(.88,1.85,.79,.69);
-    -o-animation-timing-function: cubic-bezier(.88,1.85,.79,.69);
-}
-.edit_products h2 {
-    display: inline-block;
-    padding: 15px 0 15px 20px;
-}
-.edit_products i {
-    float: right;
-    color: #e74c3c;
-    padding: 0 5px;
-    border-radius: 50%;
-    background-color: #fff;
-    cursor: pointer;
-    margin: 10px 10px 0 0;
-}
-input.modify {
-    padding: 10px 30px;
-    border-radius: 3px;
-    font-size: 14px;
-    font-weight: 400;
-    color: white;
-    border: none;
-    text-transform: uppercase;
-    width: 160px;
-    float: right;
-    margin-right: 265px;
-    background-color: #2ecc71;
-    cursor: pointer;
 }
 /*---- Section fetch Products ----*/
 .products {
@@ -254,11 +209,9 @@ th {
 }
 td:nth-last-child(1){
     padding: 0;
-    border: 1px solid;
 }
 td:nth-last-child(2){
     padding: 0;
-    border: 1px solid;
 }
 tr {
     background-color: #fff;
@@ -266,25 +219,35 @@ tr {
 tr:nth-child(even) {
     background-color: #ECEEEF;
 }
-.modf {
-    width: 100%;
-    padding: 10px 0;
-    cursor: pointer;
+.update {
     border: none;
-    color: snow;
     font-size: 1rem;
     border-radius: 0;
-    background-color: #EA962B;
 }
-.dlet {
-    width: 100%;
+.update-btn {
+    cursor: pointer;
+    background-image: linear-gradient(to right, #43e97b 0%, #38f9d7 100%);
+    color: #0A246A;
+    padding: 10px 20px;
+}
+input[type=checkbox] {
+    width: 20%;
+}
+th:last-of-type {
+    padding: 0;
+}
+.delete {
     border: none;
-    font-size: 1rem;
     cursor: pointer;
     color: snow;
-    padding: 10px 0;
     border-radius: 0;
-    background-color: #e74c3c;
+}
+input#delete_product {
+    background: #e74c3c;
+    cursor: pointer;
+    color: snow;
+    font-size: 1rem;
+    width: 100px;
 }
 /*---- Footer ----*/
 footer {

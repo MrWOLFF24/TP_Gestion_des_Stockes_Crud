@@ -2,12 +2,7 @@
 const app = (function () {
     "use strict";
 
-    /**
-     * variable global stocks with empty array for products
-     * @alias app.stock
-     * @type {Array}
-     */
-    let stock = [];
+
     /**
      * variable global for products
      * @alias app.productName
@@ -16,42 +11,22 @@ const app = (function () {
      * @alias app.productDiscription
      * @alias app.addProd
      * @alias app.send
-     * @alias app.tblList
+     * @alias app.formProduct
      * @type {element}
      */
-    let productName, productPrice, productColor, productDiscription, addProd, send, tblList;
+    let formProduct,
+        send,
+        idsproducts = [],
+        updateProductBtns,
+        activeProductId,
+        formStatus,
+        productName,
+        productPrice,
+        productColor,
+        productDiscription,
+        modal
+    ;
 
-    /**
-     * Constructor for products
-     * @alias app.Products
-     * @param prod
-     * @constructor
-     */
-    const Product = function (prod) {
-        this.reference = prod.reference;
-        this.name =  prod.name;
-        this.price = prod.price;
-        this.discription = prod.discription;
-        this.color = prod.color;
-    };
-
-    /**
-     * function for count items in array stock
-     * @alias app.count
-     * @param {number} c
-     */
-    const count = function (c) {
-        let cnt = document.getElementById("count");
-        let name = "produit";
-        if (c) {
-            if (c > 1) {
-                name = "produits";
-            }
-            cnt.innerHTML = "Vous avez " + c + ' ' + name + " en stock";
-        }else {
-            cnt.innerHTML = "Vous n'avez pas de " + name + " en stock";
-        }
-    };
 
     /**
      * function to get data from array stock
@@ -59,143 +34,260 @@ const app = (function () {
      * @return {string}
      */
     const getData = function () {
-        let i, data = "";
-        for (i = 0; i < stock.length; i++){
-            data += `<tr>
-                    <td>BZ - 00${stock[i].reference}</td>
-                    <td>${stock[i].name}</td>
-                    <td>${stock[i].price} €</td>
-                    <td>${stock[i].color}</td>
-                    <td>${stock[i].discription}</td>
-                    <td><button class="modf" onclick="app.edtProduct(${i})">Modifier</button></td>
-                    <td><button class="dlet" onclick="app.dltProduct(${i})">Supprimer</button></td>
-                </tr>`;
-        }
-        // count stock length
-        count(stock.length);
-        return tblList.innerHTML = data;
+
     };
 
     /**
-     * function for generate & add a new product in stock
+     * function for add a new product in stock
      * @alias app.addProduct
      */
-    const addProduct = function () {
-        let c = 0, submit = document.getElementById("add_product");
-        submit.addEventListener("submit", function () {
-            let p = new Product({
-                reference : c += 1,
-                name : productName.value,
-                price : productPrice.value,
-                color : productColor.value,
-                discription : productDiscription.value
-            });
-            // push data in array stock
-            stock.push(p);
-            // empty all inputs
-            productName.value = "";
-            productColor.value = "";
-            productPrice.value = "";
-            productDiscription.value = "";
-            // add focus on input name
-            productName.focus();
-            // display data in html page
-            getData();
-        });
+    const addProduct = function (evt, mode) {
+        productName = document.getElementById("product_name").value;
+        productPrice = document.getElementById("product_price").value;
+        productColor = document.getElementById("product_color").value;
+        productDiscription = document.getElementById("product_discription").value;
+
+            evt.preventDefault();
+            const fd = new FormData();
+            const xhr = new XMLHttpRequest();
+
+            if (mode === "update") {
+                fd.append("id_product", activeProductId);
+            }
+
+            fd.append("product_name", productName);
+            fd.append("product_price", productPrice);
+            fd.append("product_color", productColor);
+            fd.append("product_discription", productDiscription);
+            fd.append("action", mode + "_product");
+
+            xhr.open("POST", "ajax.php");
+
+            xhr.onload = function getServerResponse() {
+
+                if (mode === "create") {
+                    let id = Number(this.response);
+                    addProductInDOMList(id, {
+                        productName: productName,
+                        productPrice: productPrice,
+                        productColor: productColor,
+                        productDiscription: productDiscription
+                    });
+                } else {
+                    updateProductInDOMList(productName, productPrice, productColor, productDiscription);
+                }
+                resetForm();
+            };
+            xhr.send(fd);
     };
 
-    /**
-     * function for delete an object in stock and display data
-     * @alias app.deleteProduct
-     * @param {array} item
+    /** @function resetForm
+     * Réinitialise les champs du formulaire
+     *
+     * @returns {undefined} RAS
      */
-    const deleteProduct = function (item) {
-        stock.splice(item, 1);
-        getData();
+    function resetForm() {
+        productName = document.getElementById("product_name").value = "";
+        productPrice = document.getElementById("product_price").value = "";
+        productColor = document.getElementById("product_color").value = "";
+        productDiscription = document.getElementById("product_discription").value = "";
+
+        modal.classList.remove("is-active");
+    }
+
+    /**
+     * function for delete an product in stock and display table
+     * @alias app.deleteProduct
+     */
+    const deleteProduct = function () {
+        const checked = document.querySelectorAll(".delete input:checked");
+        console.log(checked);
+
+        if (checked.length) {
+            let fd = new FormData();
+            let xhr = new XMLHttpRequest();
+
+            checked.forEach(function (c) {
+                let product = c.parentElement.parentElement;
+                let idProduct = Number(product.getAttribute("data-id-product"));
+                idsproducts.push(idProduct);
+            });
+
+            fd.append("action", "delete_product");
+
+            fd.append("ids", JSON.stringify(idsproducts));
+
+            xhr.open("POST", "ajax.php");
+
+            xhr.onload = function getServerResponse() {
+                removeProductsFromDOMList();
+            };
+            xhr.send(fd);
+        }
     };
+
+    /** @function removeProductsFromDOMList
+     * Supprime les lignes du tableur contenant des checkbox cochés
+     *
+     * @returns {number} la tailles de lignes du tableur restantes
+     */
+    function removeProductsFromDOMList() {
+        const checkBoxes = document.querySelectorAll(".delete input:checked");
+        checkBoxes.forEach(function parse(checkbox) {
+            checkbox.parentElement.parentElement.remove();
+        });
+        return document.querySelectorAll("tbody tr").length;
+    }
 
     /**
      * function for edit an object in stock and display data
      * @alias app.editProduct
-     * @param {array} item
+     * @param {array} evt
      */
-    const editProduct = function (item) {
-        // get inputs
-        let nameEdit = document.getElementById("edit_name");
-        let priceEdit = document.getElementById("edit_price");
-        let colorEdit = document.getElementById("edit_color");
-        let discriptionEdit = document.getElementById("edit_discription");
-        // put stock items value in input
-        nameEdit.value = stock[item].name;
-        priceEdit.value = stock[item].price;
-        colorEdit.value = stock[item].color;
-        discriptionEdit.value = stock[item].discription;
-        // display editModal
-        document.querySelector(".edit_products").style.display = "block";
-        let edit = document.getElementById("edit_product");
-        edit.addEventListener("submit", function () {
-            let pEdit = {
-                name : nameEdit.value,
-                price : priceEdit.value,
-                color : colorEdit.value,
-                discription:discriptionEdit.value
-            };
-            console.log(pEdit);
-            // add new values
-            stock.splice(item, 1, pEdit);
-            // display table
-            getData();
-            closeModal();
-        });
+    const editProduct = function (evt) {
+        const src = evt.target || evt.srcElement;
+        const parent = src.parentElement.parentElement;
+        const fd = new FormData();
+        const xhr = new XMLHttpRequest();
+
+        evt.preventDefault();
+
+        activeProductId = Number(parent.getAttribute("data-id-product"));
+
+        fd.append("id_product", activeProductId);
+        fd.append("action", "get_product");
+
+        xhr.open("POST", "ajax.php");
+
+        xhr.onload = function getBillFromServer() {
+            const productToEdit = JSON.parse(this.response);
+            display(productToEdit);
+        };
+
+        xhr.send(fd);
+    };
+
+
+    const addProductInDOMList = function (insertedId, productData) {
+        let td;
+        const tr = document.createElement("tr");
+        tr.setAttribute("data-id-product", insertedId);
+        tr.classList.add("product");
+
+        td = document.createElement("td");
+        td.textContent = insertedId;
+        tr.appendChild(td);
+        td = document.createElement("td");
+        td.textContent = productData.productName;
+        tr.appendChild(td);
+        td = document.createElement("td");
+        td.textContent = productData.productPrice + " €";
+        tr.appendChild(td);
+        td = document.createElement("td");
+        td.textContent = productData.productColor;
+        tr.appendChild(td);
+        td = document.createElement("td");
+        td.textContent = productData.productDiscription;
+        tr.appendChild(td);
+        td = document.createElement("td");
+        td.className = "update";
+        td.innerHTML = "<span class='update-btn'>edit</span>";
+        td.querySelector(".tabler-btn").onclick = editProduct();
+        tr.appendChild(td);
+        td = document.createElement("td");
+        td.className = "delete";
+        td.innerHTML = "<input type='checkbox'>";
+        tr.appendChild(td);
+
+        return document.getElementById("Product_list").appendChild(tr);
     };
 
     /**
-     * function for close modal when form was submit
-     * @alias app.closeModal
+     * @function updateProductInDOMList
+     * @param productName
+     * @param productPrice
+     * @param productColor
+     * @param productDiscription
      */
-    const closeModal = function () {
-        document.querySelector(".edit_products").style.display = "none";
+    const updateProductInDOMList = function (productName, productPrice, productColor, productDiscription) {
+        let td;
+        const tr = document.querySelector(`[data-id-product="${activeProductId}"]`);
+        console.log(tr);
+        td = tr.querySelector("td:nth-child(2)");
+        td.textContent = productName;
+
+        td = tr.querySelector("td:nth-child(3)");
+        td.textContent = productPrice;
+
+        td = tr.querySelector("td:nth-child(4)");
+        td.textContent = productColor;
+
+        td = tr.querySelector("td:nth-child(5)");
+        td.textContent = productDiscription;
     };
+
     /**
      * function for display form when a element was clicked
      * @alias app.display
      */
-    const display = function () {
-        let elem = document.getElementById("show_prod");
-        let modal = document.querySelector(".modal-content");
-        let cross = document.querySelector(".cross");
-        let editCross = document.querySelector(".edit-cross");
-        let editModal = document.querySelector(".edit_products");
-        elem.addEventListener("click", function () {
-            modal.style.display = "block";
-        });
-        cross.addEventListener("click", function () {
-            modal.style.display = "none";
-        });
-        editCross.addEventListener("click", function () {
-            editModal.style.display = "none";
-        });
+    const display = function (productToEdit) {
+        const titre = document.querySelector(".modal-content h2");
+        if (modal.classList.contains("is-active")) {
+            resetForm();
+            display(billToEdit);
+        } else {
+            titre.textContent = "Modifier un Produit";
+            send.value = "Modifier";
+            modal.classList.add("is-active");
+
+            if (productToEdit) {
+                formStatus = "update";
+                productName = document.getElementById("product_name");
+                productPrice = document.getElementById("product_price");
+                productColor = document.getElementById("product_color");
+                productDiscription = document.getElementById("product_discription");
+
+                productName.value = productToEdit.nom;
+                productPrice.value = productToEdit.prix;
+                productColor.value = productToEdit.couleur;
+                productDiscription.value = productToEdit.description;
+            } else {
+                formStatus = "create";
+                titre.textContent = "Ajouter un Produit";
+                send.value = "Ajouter";
+            }
+        }
     };
 
-    window.onload = function init() {
+    const init = function init() {
         // DOM elements selection
-        productName = document.getElementById("product_name");
-        productPrice = document.getElementById("product_price");
-        productColor = document.getElementById("product_color");
-        productDiscription = document.getElementById("product_discription");
-        addProd = document.getElementById("add_product");
+        const addProd = document.getElementById("show_prod");
+        formProduct = document.getElementById("form_product");
         send = document.getElementById("send");
-        tblList = document.getElementById("Product_list");
-        // end DOM elements selection
-        getData();
-        addProduct();
-        //editProduct();
-        display();
+        modal = document.querySelector(".modal-content");
+        updateProductBtns = document.querySelectorAll(".update-btn");
+        updateProductBtns.forEach(function (btn) {
+            btn.onclick = editProduct;
+        });
+
+        addProd.addEventListener("click", function (e) {
+            e.preventDefault();
+            modal.classList.add("is-active");
+        });
+
+        const deleteBtn = document.getElementById("delete_product");
+        if (deleteBtn) deleteBtn.onclick = deleteProduct;
+        send.onclick = function chooseFormMode(evt) {
+            addProduct(evt, formStatus);
+        };
+
+        const cross = document.querySelector(".cross");
+        cross.addEventListener("click", function () {
+           modal.classList.remove("is-active");
+        });
     };
 
-    return {
-        dltProduct : deleteProduct,
-        edtProduct : editProduct
-    }
+
+    window.addEventListener("DOMContentLoaded", init);
 
 }());
