@@ -167,7 +167,7 @@ const app = (function () {
 
         xhr.open("POST", "ajax.php");
 
-        xhr.onload = function getBillFromServer() {
+        xhr.onload = function getProductFromServer() {
             let productToEdit = JSON.parse(this.response);
             display(productToEdit);
         };
@@ -254,26 +254,30 @@ const app = (function () {
      */
     const display = function (productToEdit) {
         const titre = document.querySelector(".modal-content h2");
-
-            titre.textContent = "Modifier un Produit";
-            send.value = "Modifier";
-            modal.classList.add("is-active");
-
-            if (productToEdit) {
-                formStatus = "update";
-                productName = document.getElementById("product_name");
-                productPrice = document.getElementById("product_price");
-                productColor = document.getElementById("product_color");
-                productDiscription = document.getElementById("product_discription");
-
-                productName.value = productToEdit.nom;
-                productPrice.value = productToEdit.prix;
-                productColor.value = productToEdit.couleur;
-                productDiscription.value = productToEdit.description;
+            if (modal.classList.add("is-active")) {
+                resetForm();
+                display(billToEdit);
             } else {
-                formStatus = "create";
-                titre.textContent = "Ajouter un Produit";
-                send.value = "Ajouter";
+                titre.textContent = "Modifier un Produit";
+                send.value = "Modifier";
+                modal.classList.add("is-active");
+
+                if (productToEdit) {
+                    formStatus = "update";
+                    productName = document.getElementById("product_name");
+                    productPrice = document.getElementById("product_price");
+                    productColor = document.getElementById("product_color");
+                    productDiscription = document.getElementById("product_discription");
+
+                    productName.value = productToEdit.nom;
+                    productPrice.value = productToEdit.prix;
+                    productColor.value = productToEdit.couleur;
+                    productDiscription.value = productToEdit.description
+                } else {
+                    formStatus = "create";
+                    titre.textContent = "Ajouter un Produit";
+                    send.value = "Ajouter";
+                }
             }
     };
 
@@ -289,10 +293,14 @@ const app = (function () {
         formProduct = document.getElementById("form_product");
         send = document.getElementById("send");
         modal = document.querySelector(".modal-content");
+
         updateProductBtns = document.querySelectorAll(".update-btn");
-        updateProductBtns.forEach(function (btn) {
-            btn.onclick = editProduct;
-        });
+        if (updateProductBtns) {
+            updateProductBtns.forEach(function (btn) {
+                btn.onclick = editProduct;
+            });
+        }
+
         addProd.addEventListener("click", function (e) {
             e.preventDefault();
             modal.classList.add("is-active");
