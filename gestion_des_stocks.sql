@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : localhost:8889
--- Généré le :  mer. 10 jan. 2018 à 12:04
+-- Généré le :  jeu. 11 jan. 2018 à 12:25
 -- Version du serveur :  5.6.35
 -- Version de PHP :  7.1.8
 
@@ -29,6 +29,17 @@ CREATE TABLE `produits` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
+-- Déchargement des données de la table `produits`
+--
+
+INSERT INTO `produits` (`id`, `nom`, `prix`, `couleur`, `description`) VALUES
+  (5, 'genji', '100', 'green', 'js ninja'),
+  (6, 'ana', '900', 'bleu', 'sharp shooter'),
+  (7, 'roadhog', '588', 'gray', 'pig machine'),
+  (8, 'chacale', '5000', 'gray/yellow', 'mad man / sientist'),
+  (11, 'salut', '66', 'dqsd', 'dqsdq');
+
+--
 -- Index pour les tables déchargées
 --
 
@@ -46,4 +57,4 @@ ALTER TABLE `produits`
 -- AUTO_INCREMENT pour la table `produits`
 --
 ALTER TABLE `produits`
-  MODIFY `id` smallint(5) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` smallint(5) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
