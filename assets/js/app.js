@@ -256,7 +256,7 @@ const app = (function () {
         const titre = document.querySelector(".modal-content h2");
             if (modal.classList.add("is-active")) {
                 resetForm();
-                display(billToEdit);
+                display(productToEdit);
             } else {
                 titre.textContent = "Modifier un Produit";
                 send.value = "Modifier";
