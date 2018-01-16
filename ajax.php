@@ -22,7 +22,7 @@ if (isset($_POST["action"])) {
             $_POST["product_name"],
             $_POST["product_price"],
             $_POST["product_color"],
-            $_POST["product_discription"]
+            $_POST["product_description"]
         ));
     }
 }

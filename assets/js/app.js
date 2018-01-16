@@ -8,7 +8,7 @@ const app = (function () {
      * @alias app.productName
      * @alias app.productPrice
      * @alias app.productColor
-     * @alias app.productDiscription
+     * @alias app.productDescription
      * @alias app.addProd
      * @alias app.send
      * @alias app.formProduct
@@ -24,7 +24,7 @@ const app = (function () {
         productName,
         productPrice,
         productColor,
-        productDiscription,
+        productDescription,
         modal
     ;
 
@@ -42,18 +42,18 @@ const app = (function () {
     /**
      * @function addProduct
      * function for add a new product in stock
-     * @param {event} evt
      * @param {string} mode
      * @alias app.addProduct
      * @return {undefined} RAS
      */
-    const addProduct = function (evt, mode) {
+    const addProduct = function (mode) {
         productName = document.getElementById("product_name").value;
         productPrice = document.getElementById("product_price").value;
         productColor = document.getElementById("product_color").value;
-        productDiscription = document.getElementById("product_discription").value;
+        productDescription = document.getElementById("product_description").value;
 
-            evt.preventDefault();
+        if (productName && productPrice && productColor && productDescription) {
+
             const fd = new FormData();
             const xhr = new XMLHttpRequest();
 
@@ -64,7 +64,7 @@ const app = (function () {
             fd.append("product_name", productName);
             fd.append("product_price", productPrice);
             fd.append("product_color", productColor);
-            fd.append("product_discription", productDiscription);
+            fd.append("product_description", productDescription);
             fd.append("action", mode + "_product");
 
             xhr.open("POST", "ajax.php");
@@ -76,14 +76,15 @@ const app = (function () {
                         productName: productName,
                         productPrice: productPrice,
                         productColor: productColor,
-                        productDiscription: productDiscription
+                        productDescription: productDescription
                     });
                 } else {
-                    updateProductInDOMList(productName, productPrice, productColor, productDiscription);
+                    updateProductInDOMList(productName, productPrice, productColor, productDescription);
                 }
                 resetForm();
             };
             xhr.send(fd);
+        }
     };
 
     /** @function resetForm
@@ -92,10 +93,15 @@ const app = (function () {
      * @returns {undefined} RAS
      */
     function resetForm() {
-        productName = document.getElementById("product_name").value = "";
-        productPrice = document.getElementById("product_price").value = "";
-        productColor = document.getElementById("product_color").value = "";
-        productDiscription = document.getElementById("product_discription").value = "";
+        productName = document.getElementById("product_name");
+        productPrice = document.getElementById("product_price");
+        productColor = document.getElementById("product_color");
+        productDescription = document.getElementById("product_description");
+
+        productName.value = "";
+        productPrice.value = "";
+        productColor.value = "";
+        productDescription.value = "";
 
         modal.classList.remove("is-active");
     }
@@ -196,18 +202,17 @@ const app = (function () {
         td.textContent = productData.productName;
         tr.appendChild(td);
         td = document.createElement("td");
-        td.textContent = productData.productPrice + " €";
+        td.textContent = productData.productPrice;
         tr.appendChild(td);
         td = document.createElement("td");
         td.textContent = productData.productColor;
         tr.appendChild(td);
         td = document.createElement("td");
-        td.textContent = productData.productDiscription;
+        td.textContent = productData.productDescription;
         tr.appendChild(td);
         td = document.createElement("td");
         td.className = "update";
         td.innerHTML = "<span class='update-btn'>edit</span>";
-        td.querySelector(".tabler-btn").onclick = editProduct();
         tr.appendChild(td);
         td = document.createElement("td");
         td.className = "delete";
@@ -223,10 +228,10 @@ const app = (function () {
      * @param productName
      * @param productPrice
      * @param productColor
-     * @param productDiscription
+     * @param productDescription
      * @return {undefined} RAS
      */
-    const updateProductInDOMList = function (productName, productPrice, productColor, productDiscription) {
+    const updateProductInDOMList = function (productName, productPrice, productColor, productDescription) {
         let td;
         const tr = document.querySelector(`[data-id-product="${activeProductId}"]`);
         if (tr){
@@ -241,7 +246,7 @@ const app = (function () {
             td.textContent = productColor;
 
             td = tr.querySelector("td:nth-child(5)");
-            td.textContent = productDiscription;
+            td.textContent = productDescription;
         }
     };
 
@@ -253,6 +258,11 @@ const app = (function () {
      * @return {undefined} RAS
      */
     const display = function (productToEdit) {
+        productName = document.getElementById("product_name");
+        productPrice = document.getElementById("product_price");
+        productColor = document.getElementById("product_color");
+        productDescription = document.getElementById("product_description");
+
         const titre = document.querySelector(".modal-content h2");
             if (modal.classList.add("is-active")) {
                 resetForm();
@@ -264,15 +274,11 @@ const app = (function () {
 
                 if (productToEdit) {
                     formStatus = "update";
-                    productName = document.getElementById("product_name");
-                    productPrice = document.getElementById("product_price");
-                    productColor = document.getElementById("product_color");
-                    productDiscription = document.getElementById("product_discription");
 
                     productName.value = productToEdit.nom;
                     productPrice.value = productToEdit.prix;
                     productColor.value = productToEdit.couleur;
-                    productDiscription.value = productToEdit.description
+                    productDescription.value = productToEdit.description
                 } else {
                     formStatus = "create";
                     titre.textContent = "Ajouter un Produit";
@@ -303,12 +309,14 @@ const app = (function () {
 
         addProd.addEventListener("click", function (e) {
             e.preventDefault();
+            resetForm();
             modal.classList.add("is-active");
+            display();
         });
 
         send.addEventListener("click", function (evt) {
-            display();
-            addProduct(evt, formStatus);
+            evt.preventDefault();
+            addProduct(formStatus);
         });
 
         const deleteBtn = document.getElementById("delete_product");
@@ -316,7 +324,6 @@ const app = (function () {
 
         const cross = document.querySelector(".cross");
         cross.addEventListener("click", function () {
-           modal.classList.remove("is-active");
            resetForm();
         });
     };

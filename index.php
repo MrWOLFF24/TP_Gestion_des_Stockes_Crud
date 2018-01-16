@@ -30,8 +30,8 @@
             <label for="product_color">Couleur du Produit :</label>
             <input id="product_color" name="product_color" type="text" placeholder="Ex: Rouge">
             <br>
-            <label for="product_discription">Description du Produit :</label>
-            <textarea id="product_discription" name="product_discription" placeholder="Super produit" required></textarea>
+            <label for="product_description">Description du Produit :</label>
+            <textarea id="product_description" name="product_description" placeholder="Super produit" required></textarea>
             <br>
             <input id="send" class="button success" type="submit" value="Ajouter">
         </form>
@@ -51,7 +51,7 @@
                 <th>Nom</th>
                 <th>Prix</th>
                 <th>Couleur</th>
-                <th>Discription</th>
+                <th>description</th>
                 <th>Modifier</th>
                 <th>
                     <input type="submit" id="delete_product" value="Supprimer">

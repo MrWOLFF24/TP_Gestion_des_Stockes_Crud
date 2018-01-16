@@ -24,13 +24,13 @@ function deleteProducts($ids) {
 // insère une nouvelle ligne de facture avec les infos du post
 function createProduct() {
     global $db;
-    $sql = "INSERT INTO produits (nom, prix, couleur, description) VALUES (:nom, :prix, :couleur, :discription)";
+    $sql = "INSERT INTO produits (nom, prix, couleur, description) VALUES (:nom, :prix, :couleur, :description)";
 
     $query = $db->prepare($sql);
     $query->bindParam(":nom", $_POST['product_name'], PDO::PARAM_STR);
     $query->bindParam(":prix", $_POST['product_price'], PDO::PARAM_STR);
     $query->bindParam(":couleur", $_POST['product_color'], PDO::PARAM_STR);
-    $query->bindParam(":discription", $_POST['product_discription'], PDO::PARAM_STR);
+    $query->bindParam(":description", $_POST['product_description'], PDO::PARAM_STR);
     $res = $query->execute();
     return $db->lastInsertId();
 }
@@ -57,18 +57,18 @@ function getProducts() {
 }
 
 //update un produit
-function updateProduct($id_product, $nom, $prix, $couleur, $discription) {
+function updateProduct($id_product, $nom, $prix, $couleur, $description) {
     global $db;
     $id_product = (int)$id_product;
 
-    $sql = "UPDATE produits SET nom = :nom, prix = :prix, couleur = :couleur, description = :discription  WHERE id = :id";
+    $sql = "UPDATE produits SET nom = :nom, prix = :prix, couleur = :couleur, description = :description  WHERE id = :id";
 
     $query = $db->prepare($sql);
     $query->bindParam(":id", $id_product, PDO::PARAM_INT);
     $query->bindParam(":nom", $nom, PDO::PARAM_STR);
     $query->bindParam(":prix", $prix, PDO::PARAM_STR);
     $query->bindParam(":couleur", $couleur, PDO::PARAM_STR);
-    $query->bindParam(":discription", $discription, PDO::PARAM_STR);
+    $query->bindParam(":description", $description, PDO::PARAM_STR);
 
     return $query->execute();
 }
